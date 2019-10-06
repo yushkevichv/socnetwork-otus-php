@@ -44,4 +44,23 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getGenderAttribute($value)
+    {
+        switch ($value) {
+            case 0:
+                return __('user.gender_undefined');
+            break;
+            case 1:
+                return __('user.gender_male');
+            break;
+            case 2:
+                return __('user.gender_female');
+            break;
+            default:
+                return __('user.gender_undefined');
+            break;
+        }
+
+    }
 }

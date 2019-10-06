@@ -15,6 +15,8 @@
                     @endif
 
                     You are logged in!
+
+                    <p><a href="{{route('user.index')}}">Show users</a></p>
                 </div>
             </div>
         </div>
