@@ -12,3 +12,6 @@ npm-debug.log
 yarn-error.log
 .editorconfig
 .idea
+app.css
+app.js
+mix-manifest.json
