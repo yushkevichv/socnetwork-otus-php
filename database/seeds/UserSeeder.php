@@ -11,14 +11,10 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker\Factory::create();
+        $faker = Faker\Factory::create('ru_RU');
         $password = \Illuminate\Support\Facades\Hash::make('password');
-//        $users = factory(\App\User::class, 1000)->make()->toArray();
-//
-//        foreach (array_chunk($users, 200) as $chunkedUsers) {
-//            \App\User::insert($chunkedUsers);
-//        }
 
+        // more best will be work by file
         for($i=0; $i<200; $i++) {
             for($j=0; $j<5000; $j++) {
                 $users[] = [
@@ -42,10 +38,5 @@ class UserSeeder extends Seeder
             }
             unset($users);
         }
-
-//
-//        for ($i=0; $i < 5; $i++) {
-//            factory(\App\User::class, 200)->create();
-//        }
     }
 }

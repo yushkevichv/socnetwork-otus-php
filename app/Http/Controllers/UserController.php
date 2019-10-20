@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     private $userRepository;
-    const PER_PAGE = 10;
+    const PER_PAGE = 50;
 
     public function __construct(UserRepository $userRepository)
     {
@@ -18,7 +18,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $currentMaxCount = self::PER_PAGE;
-        $usersCount = $this->userRepository->getAllCount();
+        $usersCount = $this->userRepository->getAllCount($request->q);
         if($request->page) {
             $page = $request->page;
             $currentMaxCount = $request->page * self::PER_PAGE;
@@ -34,9 +34,11 @@ class UserController extends Controller
             $isMoreExist = false;
         }
 
-        $users = $this->userRepository->getAll(self::PER_PAGE, $currentMaxCount);
+        $query = $request->q ?? null;
 
-        return view('users.index', compact('users', 'usersCount', 'isMoreExist', 'page'));
+        $users = $this->userRepository->getAll(self::PER_PAGE, $currentMaxCount, $query);
+
+        return view('users.index', compact('users', 'usersCount', 'isMoreExist', 'page', 'query'));
     }
 
     public function show($id)
