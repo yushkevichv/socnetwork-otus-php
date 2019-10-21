@@ -19,7 +19,7 @@
                 <div class="card-header">Список пользователей</div>
 
                 <div class="card-body">
-                    <p>Всего пользователей: {{ $usersCount }} </p>
+{{--                    <p>Всего пользователей: {{ $usersCount }} </p>--}}
 
                     @if(count($users) > 0)
                         <table class="table">
@@ -49,7 +49,7 @@
                         @if($page != 1)
                              <a href="{{route('user.index')}}">В начало</a> |
                         @endif
-                        @if($isMoreExist)
+                        @if($isMoreExist && (count($users) > 0))
                              <a href="{{route('user.index', ['page' => $page+1])}}">Следующая страница</a>
                         @endif
                     </p>

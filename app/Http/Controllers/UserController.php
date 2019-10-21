@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -17,8 +19,8 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $currentMaxCount = self::PER_PAGE;
-        $usersCount = $this->userRepository->getAllCount($request->q);
+        $currentMaxCount = 0;
+//        $usersCount = $this->userRepository->getAllCount($request->q);
         if($request->page) {
             $page = $request->page;
             $currentMaxCount = $request->page * self::PER_PAGE;
@@ -27,18 +29,29 @@ class UserController extends Controller
             $page = 1;
         }
 
-        if($currentMaxCount < $usersCount) {
+//        if($currentMaxCount < $usersCount) {
             $isMoreExist = true;
-        }
-        else {
-            $isMoreExist = false;
-        }
+//        }
+//        else {
+//            $isMoreExist = false;
+//        }
 
         $query = $request->q ?? null;
 
         $users = $this->userRepository->getAll(self::PER_PAGE, $currentMaxCount, $query);
 
-        return view('users.index', compact('users', 'usersCount', 'isMoreExist', 'page', 'query'));
+//        $users = User::query()
+//            ->select(DB::raw('id, name, last_name, gender, city, TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age'))
+//            ->where('name', 'like' ,"$query%")
+//            ->orWhere('last_name', 'like' ,"$query%")
+//            ->limit(self::PER_PAGE)
+//            ->skip($currentMaxCount)
+//            ->orderBy('id', 'asc')
+//            ->get();
+//
+//
+
+        return view('users.index', compact('users',  'isMoreExist', 'page', 'query'));
     }
 
     public function show($id)
