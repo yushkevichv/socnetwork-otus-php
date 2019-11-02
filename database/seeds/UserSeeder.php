@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         for($i=0; $i<200; $i++) {
             for($j=0; $j<5000; $j++) {
                 $users[] = [
-                    'name' => $faker->name,
+                    'name' => $faker->firstName,
                     'last_name' => $faker->lastName,
                     'birthday' => $faker->dateTimeBetween('-50 years', '-18 years'),
                     'gender' => rand(1, 2),
