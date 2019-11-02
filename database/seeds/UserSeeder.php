@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
         $password = \Illuminate\Support\Facades\Hash::make('password');
 
         // more best will be work by file
-        for($i=0; $i<200; $i++) {
-            for($j=0; $j<5000; $j++) {
+        for($i=0; $i<2000; $i++) {
+            for($j=0; $j<500; $j++) {
                 $users[] = [
                     'name' => $faker->firstName,
                     'last_name' => $faker->lastName,
@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
                     'gender' => rand(1, 2),
                     'city' => $faker->city,
                     'interests' => $faker->word,
-                    'email' => $faker->unique()->safeEmail,
+                    'email' => rand(0,8000).'_'.$faker->safeEmail,
                     'email_verified_at' => now(),
                     'password' => $password,
                     'remember_token' => \Illuminate\Support\Str::random(10),

@@ -5,6 +5,7 @@ $mysqli = new mysqli("mysql", "default", "secret", "socnetwork");
 if ($mysqli->connect_errno) {
     echo "Не удалось подключиться к MySQL: " . $mysqli->connect_error;
 }
+$mysqli->set_charset('utf8');
 
 if($query = $_GET['q']) {
     $dbQuery = "
@@ -34,6 +35,9 @@ $res = $mysqli->query($dbQuery);
 $res->data_seek(0);
 ?>
 <html>
+<head>
+    <meta charset="utf-8">
+</head>
 <body>
 
 <table>
