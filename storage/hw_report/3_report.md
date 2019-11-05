@@ -1,136 +1,140 @@
-# Результаты нагрузочного тестирования
+# Результаты нагрузочного тестирования до / после репликации
 
 ## Входные данные
 
-1 млн записей пользователей. 
-1 запрос в БД на получение списка данных с и без фильтрацией по префиксному поиску like "query%" с ограничением лимита на отображение данных (50 элементов).  
-Тестирование производилось локально, проект поднят в doker с использованием настроек по умолчанию laradock.
+Существуют таблица пользователей, куда постоянно пишутся записи (1 млн записей).
+В процессе записи проводится нагрузочное тестирование запросов на чтение по выборке пользователей с условием (условия аналогичные предыдущему заданию).
+После настраивается ассинхронная репликация и повторяются входные данные.
 
-## До добавления индексов
+Тестирование производится на 2 независимых endpoint (резульаты замеров учитываются раздельно). 
+1- в рамках фреймворка Laravel без использования Eloquent (raw запросы через query builder с гидратацией в объекты). 2- vanila php код. 
 
-### Тестирование запроса без фильтрации
+Настройки сервера (nginx в частности) использовались стандартные, не кастомизировались. 
 
- wrk -t1 -c1 -d30s http://localhost/users
- ```
-Latency   353.01ms
-61 requests in 30.08s, 1.57MB read
-Socket errors: connect 0, read 0, write 0, timeout 1
-
-Requests/sec:      2.03
-Transfer/sec:     53.39KB
-```
-
-wrk -t1 -c10 -d30s http://localhost/users
- ```
-Latency   831.73ms
-357 requests in 30.00s, 9.18MB rea
-
-Requests/sec:     11.90
-Transfer/sec:    313.20KB
-```
-
-wrk -t10 -c10 -d30s http://localhost/users
- ```
-Latency   840.99ms
-352 requests in 30.09s, 9.05MB read
-
-Requests/sec:     11.70
-Transfer/sec:    307.94KB
-```
-
-wrk -t10 -c100 -d30s http://localhost/users
- ```
-Latency   992.14ms
-304 requests in 30.09s, 7.81MB read
-Socket errors: connect 0, read 0, write 0, timeout 288
-
-Requests/sec:     10.10
-Transfer/sec:    265.95KB
-```
-
-wrk -t10 -c1000 -d30s http://localhost/users
- ```
-Latency   1.11s
-353 requests in 30.10s, 8.49MB read
-Socket errors: connect 758, read 127, write 3, timeout 334
-Non-2xx or 3xx responses: 23
-
-Requests/sec:     11.73
-Transfer/sec:    288.83KB
-```
-
-#### Промежуточные выводы
-Пропускная способность приложения (возможны не оптимальны серверные настройки) составляет около 10-11 запросов / секунду.
-Если увеличивать нагрузку, то возникает больше ошибок с подключением и обработкой сокетов. 
-Среднее Latency под нагрузкой составляет около 840ms.
+Так как замеры предыдущей работы делались в локальном докере, а задача с репликацией будет делаться на сервере, для сравнения чтения с паралельной нагрузкой записи и без, будут продублированы замеры в докере, но итогу будут зафиксированы только в выводы. 
+ 
+## До реплики
 
 ### Тестирование запроса c фильтрацией
-Для запроса с фильтрацией был выбран запрос "ser". Он давал высокую селективность данных на сгенерированном наборе данных (487 найденных результатов из 1 млн)
+#### Запросы на фреймворк
 
-wrk -t1 -c1 -d30s  http://localhost/users?q=ser
+wrk -t1 -c1 -d30s --latency https://otus-php.pugofka.com/users?q=%D0%BC%D0%B0%D0%BA 
 ```
-Latency   487.13ms
-63 requests in 30.10s, 1.63MB read
+Latency   97.90ms
+Latency Distribution
+     75%   96.27ms
+     90%  122.72ms
+     99%  241.93ms
+308 requests in 30.03s, 9.89MB read
 
-Requests/sec:      2.09
-```
-
-wrk -t1 -c10 -d30s  http://localhost/users?q=ser
-```
-Latency   1.21s
-234 requests in 30.00s, 6.06MB read
-Socket errors: connect 0, read 0, write 0, timeout 4
-
-Requests/sec:      7.80
+Requests/sec:     10.26
 ```
 
-wrk -t10 -c100 -d30s  http://localhost/users?q=ser
+wrk -t10 -c10 -d30s --latency https://otus-php.pugofka.com/users?q=%D0%BC%D0%B0%D0%BA 
 ```
-Latency   1.14s
-243 requests in 30.09s, 6.29MB read
-Socket errors: connect 0, read 0, write 0, timeout 228
+Latency   555.41ms
+Latency Distribution
+     75%  565.65ms
+     90%  665.90ms
+     99%  912.13ms
+532 requests in 30.10s, 17.08MB read
 
-Requests/sec:      8.08
+Requests/sec:     17.68
 ```
 
-wrk -t10 -c1000 -d30s  http://localhost/users?q=ser
+wrk -t10 -c100 -d30s --latency https://otus-php.pugofka.com/users?q=%D0%BC%D0%B0%D0%BA 
 ```
-Latency   1.13s
-265 requests in 30.09s, 6.48MB read
-Socket errors: connect 758, read 175, write 0, timeout 251
-Non-2xx or 3xx responses: 15
+Latency   1.34s
+Latency Distribution
+     75%    1.89s 
+     90%    1.94s 
+     99%    1.94s 
+351 requests in 30.09s, 11.27MB read
+Socket errors: connect 0, read 0, write 0, timeout 331
 
-Requests/sec:      8.81
+Requests/sec:     11.66
 ```
+
+wrk -t10 -c1000 -d30s --latency https://otus-php.pugofka.com/users?q=%D0%BC%D0%B0%D0%BA 
+```
+Latency   45.97ms
+Latency Distribution
+     75%   47.28ms
+     90%   51.16ms
+     99%   68.20ms
+56223 requests in 30.06s, 25.20MB read
+Socket errors: connect 759, read 0, write 0, timeout 220
+Non-2xx or 3xx responses: 55985
+
+Requests/sec:   1870.19
+```
+
 
 #### Промежуточные выводы
-Пропускная способность приложения (возможны не оптимальны серверные настройки) составляет около 8 запросов / секунду.
-При увеличении нагрузки система ведет себя аналогично запросу без фильтрации. 
-Среднее Latency под нагрузкой составляет около 1.1ms, что ~ на 30% медленнее без фильтрации.
 
-Дополнительно был проведен эксперимент без гидратации моделей (работа с чистыми массивами).
-В этом случае средний throughput составил: 13 req/s; Latency: 1.07s (почему latency почти не изменился?)
+На небольшой загрузке наблюдается повышенная проихводительность, относительно запросов без одновременной записи. 
+Это легко объясняется, если смотреть на график загрузки сервера различными приложениями (php и mysql) - при работе через фреймворк основное время работа ввыполняется фреймвворком, чем объясняется низкая производительность скрипта (относительно чистого кода) и незначительные корреляции при повышении одновременной нагрузке на базу через другую точку входа (запись в базу происходила через консольный скрипт). 
+Эти запросы не приводят к значительному увеличению нагрузки на БД, поэтому latency и througput отличаются на уровне погрешности. 
+Когда же нагрузка становится более критичной для сервера, то начинают чувствоваться "тормоза" базы данных, в связи с чем, на высокой нагрузке видна более существенная просадка производительности.   
 
-На этих же условиях работа с Laravel Eloquent дало не сильное отклонение:
-wrk -t10 -c100 -d30s  http://localhost/users?q=ser
+
+
+#### Запросы на vanilla php
+
+wrk -t1 -c1 -d30s --latency https://otus-php.pugofka.com/hw2_vanila.php?q=%D0%BC%D0%B0%D0%BA 
 ```
-Latency   1.18s
-240 requests in 30.10s, 6.21MB read
-Socket errors: connect 0, read 0, write 0, timeout 226
+Latency   51.61ms
+Latency Distribution
+     75%   53.72ms
+     90%   56.78ms
+     99%   79.78ms
+573 requests in 30.07s, 8.18MB read
 
-Requests/sec:      7.97
+Requests/sec:     19.06
 ```
- 
 
-wrk -t10 -c1000 -d30s  http://localhost/users?q=ser
+wrk -t10 -c10 -d30s --latency https://otus-php.pugofka.com/hw2_vanila.php?q=%D0%BC%D0%B0%D0%BA 
 ```
-Latency   969.58ms
-232 requests in 30.09s, 5.09MB read
-Socket errors: connect 758, read 102, write 1, timeout 222
-Non-2xx or 3xx responses: 36
+Latency   223.72ms
+Latency Distribution
+     75%  252.41ms
+     90%  274.04ms
+     99%  327.61ms
+1317 requests in 30.09s, 18.81MB read
 
-Requests/sec:      7.71
+Requests/sec:     43.77
 ```
+
+wrk -t10 -c100 -d30s --latency https://otus-php.pugofka.com/hw2_vanila.php?q=%D0%BC%D0%B0%D0%BA 
+```
+Latency   1.33s
+Latency Distribution
+     75%    1.62s 
+     90%    1.82s 
+     99%    1.99s 
+1275 requests in 30.10s, 18.21MB read
+Socket errors: connect 0, read 0, write 0, timeout 1186
+
+Requests/sec:     42.36
+```
+
+wrk -t10 -c1000 -d30s --latency https://otus-php.pugofka.com/hw2_vanila.php?q=%D0%BC%D0%B0%D0%BA 
+```
+Latency   85.40ms
+Latency Distribution
+     75%   84.35ms
+     90%   89.56ms
+     99%  371.83ms
+22695 requests in 30.09s, 20.36MB read
+Socket errors: connect 759, read 0, write 0, timeout 874
+Non-2xx or 3xx responses: 21747
+
+Requests/sec:   754.23
+```
+
+
+
+
 
 ## Добавление индексов
 
