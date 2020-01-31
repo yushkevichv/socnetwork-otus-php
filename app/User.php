@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Chat;
+use App\Models\Message;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -62,5 +64,15 @@ class User extends Authenticatable
             break;
         }
 
+    }
+
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chats_users')->withTimestamps();
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 }

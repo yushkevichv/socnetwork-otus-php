@@ -23,3 +23,9 @@ Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/users', 'UserController@index')->name('user.index');
     Route::get('/users/{id}', 'UserController@show')->name('user.show');
 //});
+
+
+Route::middleware(['auth'])->group(function () {
+   Route::get('/chats', 'ChatController@index')->name('chat.index');
+   Route::get('/chats/new_chat', 'ChatController@store')->name('chat.store');
+});
