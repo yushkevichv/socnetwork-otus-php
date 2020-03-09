@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
+use App\Models\Message;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +15,8 @@ class ChatController extends Controller
     public function index(Request $request)
     {
         $chats = Auth::user()->chats;
-        return $chats;
+
+//        return view('chats.index', compact('chats',   ));
     }
 
     public function store(Request $request)
@@ -36,13 +39,31 @@ class ChatController extends Controller
 
 
         if($chat) {
-            return $chat->id;
+            // @todo add check for non exist chat
+            return redirect()->route('messages.user_index', ['id' => $chat->id]);
         }
 
         $chat = Chat::create([]);
 
         $chat->users()->attach([$from, $to]);
 
-        return $chat->id;
+
+        return redirect()->route('messages.user_index', ['id' => $chat->id]);
+    }
+
+    public function messages(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        // @todo add check for auth and gates
+        $chat = Chat::find($id);
+//        dd($chat);
+        $chatUsers = $chat->users->except($user->id);
+        // get just one user; for group chats need refactor
+        $chatUser = $chatUsers->first();
+
+        $messages = Message::query()->where('chat_id', $chat->id)->get();
+
+        return view('users.messages', compact('chat', 'messages', 'chatUser'  ));
     }
 }
