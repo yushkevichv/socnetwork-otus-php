@@ -80,7 +80,7 @@ class UserRepository
     {
         return $this->model->hydrate(
             DB::select(
-                DB::raw('select id, name, last_name, gender, city, interests, TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age  from users where id = ? limit 1 '), [$id]
+                DB::raw('select id, name, last_name, gender, city, interests, email, TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age  from users where id = ? limit 1 '), [$id]
             )
         )->first();
     }

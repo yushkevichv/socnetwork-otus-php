@@ -17,7 +17,7 @@ class CreateMessagesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('chat_id');
             $table->unsignedBigInteger('user_id');
-            $table->boolean('is_author')->default(false);
+            $table->unsignedBigInteger('author_id');
             $table->text('text');
             $table->timestamps();
         });

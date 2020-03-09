@@ -10,7 +10,7 @@ class Message extends Model
     protected $fillable = [
         'chat_id',
         'user_id',
-        'is_author',
+        'author_id',
         'text',
         'created_at',
     ];
@@ -19,5 +19,10 @@ class Message extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 }
