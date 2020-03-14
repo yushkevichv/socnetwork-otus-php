@@ -18,11 +18,13 @@ class Message extends Model
 
     public function user()
     {
+        $this->connection = 'mysql';
         return $this->belongsTo(User::class);
     }
 
     public function author()
     {
+        $this->connection = 'mysql';
         return $this->belongsTo(User::class, 'author_id');
     }
 }

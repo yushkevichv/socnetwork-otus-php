@@ -36,12 +36,41 @@ class MessageRepository
 
     public function getMessagesForChat($chatId, $userId)
     {
-        $messages = Message::query()
+        $shard = $this->shardMapper->getShardForMessages($userId);
+
+        Config::set("database.connections.".$shard->name, [
+            'driver' => 'mysql',
+            'host' => $shard->host,
+            'port' => $shard->port,
+            'database' => $shard->db_name,
+            'username' => $shard->username,
+            'password' => $shard->password,
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ]);
+
+//            try {
+// check connection
+        DB::connection($shard->name)->getPdo();
+//            }
+//            catch (\Exception $exception) {
+//                //
+//            }
+
+        $messages = Message::on($shard->name)
             ->where('chat_id', $chatId)
             ->where('user_id', $userId)
             ->with('author')
+//            ->with(['author' => function($q) use($shard) {
+//                $q->connection($shard->name);
+//            }])
             ->orderByDesc('created_at')
             ->get();
+
+
 
         return $messages;
     }
@@ -76,7 +105,7 @@ class MessageRepository
 
 //            try {
             // check connection
-                DB::connection($shard->name)->getDatabaseName();
+                DB::connection($shard->name)->getPdo();
 //            }
 //            catch (\Exception $exception) {
 //                //
