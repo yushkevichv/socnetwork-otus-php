@@ -6,10 +6,19 @@ namespace App\Repositories;
 
 use App\Models\Chat;
 use App\Models\Message;
+use App\Services\ShardMapper;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class MessageRepository
 {
+    private $shardMapper;
+
+    public function __construct(ShardMapper $shardMapper)
+    {
+        $this->shardMapper = $shardMapper;
+    }
 
     public function getChatById($id) : ?Chat
     {
@@ -39,15 +48,43 @@ class MessageRepository
 
     public function store($preparedData)
     {
-        dd(collect($preparedData)->keyBy('user_id'));
+        $data = [];
+        $shards = [];
 
-        foreach ($preparedData as $key => $value) {
-
+        foreach (collect($preparedData)->keyBy('user_id') as $userId => $messageData) {
+            $shard = $this->shardMapper->getShardForMessages($userId);
+            $shards[$shard->id] = $shard;
+            $data[$shard->id][] = $messageData;
         }
 
-        $data = [];
-        // @todo refactor to use shards
-        Message::insert($data);
+        foreach ($data as $key => $value) {
+            $shard = $shards[$key];
+
+            Config::set("database.connections.".$shard->name, [
+                'driver' => 'mysql',
+                'host' => $shard->host,
+                'port' => $shard->port,
+                'database' => $shard->db_name,
+                'username' => $shard->username,
+                'password' => $shard->password,
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix' => '',
+                'strict' => true,
+                'engine' => null,
+            ]);
+
+//            try {
+            // check connection
+                DB::connection($shard->name)->getDatabaseName();
+//            }
+//            catch (\Exception $exception) {
+//                //
+//            }
+            Message::on($shard->name)->insert($value);
+
+            unset($shard);
+        }
     }
 
 }

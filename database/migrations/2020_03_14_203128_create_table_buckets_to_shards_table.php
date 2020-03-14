@@ -16,6 +16,8 @@ class CreateTableBucketsToShardsTable extends Migration
         Schema::create('table_buckets_to_shards', function (Blueprint $table) {
             $table->unsignedBigInteger('bucket_id');
             $table->unsignedBigInteger('shard_id');
+
+            $table->primary(['shard_id', 'bucket_id']);
         });
     }
 
