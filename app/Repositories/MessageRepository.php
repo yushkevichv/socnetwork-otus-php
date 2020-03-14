@@ -37,8 +37,15 @@ class MessageRepository
         return $messages;
     }
 
-    public function store($data)
+    public function store($preparedData)
     {
+        dd(collect($preparedData)->keyBy('user_id'));
+
+        foreach ($preparedData as $key => $value) {
+
+        }
+
+        $data = [];
         // @todo refactor to use shards
         Message::insert($data);
     }
