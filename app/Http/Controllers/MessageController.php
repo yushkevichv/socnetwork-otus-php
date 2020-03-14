@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\Message;
+use App\Repositories\MessageRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
+
+    private $messageRepository;
+
+
+    public function __construct(MessageRepository $messageRepository)
+    {
+        $this->messageRepository = $messageRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,15 +26,11 @@ class MessageController extends Controller
      */
     public function index($id)
     {
-        $user = Auth::user();
-
+        $userId = Auth::id();
         // @todo add check for auth and gates
-        $chat = Chat::find($id);
-        $chatUsers = $chat->users->except($user->id);
-        // get just one user; for group chats need refactor
-        $chatUser = $chatUsers->first();
-
-        $messages = Message::query()->where('chat_id', $chat->id)->where('user_id', $user->id)->with('author')->orderByDesc('created_at')->get();
+        $chat = $this->messageRepository->getChatById($id);
+        $chatUser = $this->messageRepository->getChatUsers($chat->id, $userId)->first();
+        $messages = $this->messageRepository->getMessagesForChat($id, $userId);
 
         return view('users.messages', compact('chat', 'messages', 'chatUser'  ));
     }
@@ -59,7 +65,7 @@ class MessageController extends Controller
         }
 
         // insert data, maybe should use queue or transaction
-        Message::insert($data);
+        $this->messageRepository->store($data);
 
         return redirect()->route('messages.user_index', ['id' => $chat->id]);
     }
