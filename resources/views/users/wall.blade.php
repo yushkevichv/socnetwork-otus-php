@@ -16,7 +16,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 w-2/3" >
                         <div class="flex justify-between ">
-                            <div class="text-sm right-auto leading-5 font-medium text-gray-900">{{ $post->created_at }} </div>
+                            <div class="text-sm right-auto leading-5 font-medium text-gray-900">{{ $post->created_at }} by {{ $post->author_name}}  {{$post->author_last_name }} </div>
                         </div>
                         <div class="text-sm pt-4 leading-5 font-medium text-gray-900">{{ $post->content }} </div>
                     </td>

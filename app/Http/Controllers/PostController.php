@@ -37,7 +37,7 @@ class PostController extends Controller
 
     public function getWall()
     {
-        $posts = [];
-        return view('users.wall', compact('posts'  ));
+        $posts = $this->feedRepository->getWall(Auth::id());
+        return view('users.wall', compact('posts' ));
     }
 }

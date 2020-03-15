@@ -12,6 +12,7 @@
 */
 
 Route::get('/', function () {
+    \Illuminate\Support\Facades\Redis::del('user:feed:2');
     return view('welcome');
 });
 

@@ -24,6 +24,7 @@ class SubscribeController extends Controller
 
         if($currentUser->id !== $user->id) {
             $this->subscribeRepository->subscribe($currentUser->id, $user->id);
+            // @todo add old records to feed
         }
 
         return redirect()->route('user.index');

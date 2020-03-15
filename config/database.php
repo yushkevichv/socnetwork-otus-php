@@ -48,10 +48,10 @@ return [
             'url' => env('DATABASE_URL'),
             'read' => [
                 'host' => [
-                    env('DB_HOST_READ', '127.0.0.1'),
+                    env('DB_HOST', '127.0.0.1'),
                 ],
-                'username' => env('DB_USERNAME_READ', 'forge'),
-                'password' => env('DB_PASSWORD_READ', ''),
+                'username' => env('DB_USERNAME', 'forge'),
+                'password' => env('DB_PASSWORD', ''),
             ],
             'write' => [
                 'host' => [
