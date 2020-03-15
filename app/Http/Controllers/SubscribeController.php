@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class SubsribeController extends Controller
+class SubscribeController extends Controller
 {
 
     private $subscribeRepository;

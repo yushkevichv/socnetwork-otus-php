@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -37,19 +38,9 @@ class UserController extends Controller
         $query = $request->q ?? null;
 
         $users = $this->userRepository->getAll(self::PER_PAGE, $currentMaxCount, $query);
+        $following = $this->userRepository->getFollowing(Auth::id());
 
-//        $users = User::query()
-//            ->select(DB::raw('id, name, last_name, gender, city, TIMESTAMPDIFF(YEAR, birthday, CURDATE()) as age'))
-//            ->where('name', 'like' ,"$query%")
-//            ->orWhere('last_name', 'like' ,"$query%")
-//            ->limit(self::PER_PAGE)
-//            ->skip($currentMaxCount)
-//            ->orderBy('id', 'asc')
-//            ->get();
-//
-//
-
-        return view('users.index', compact('users',  'isMoreExist', 'page', 'query'));
+        return view('users.index', compact('users',  'isMoreExist', 'page', 'query', 'following'));
     }
 
     public function show($id)

@@ -49,6 +49,16 @@ class UserRepository
             );
     }
 
+    public function getFollowing($id) :array
+    {
+        return DB::table('subscribers')
+            ->select('author_id as following_id')
+            ->where('user_id', $id)
+            ->get()
+            ->pluck('following_id')
+            ->toArray();
+    }
+
     public function getAllCount($query = null)
     {
         $whereQuery = $this->prepareLikeCondition($query);

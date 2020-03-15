@@ -43,6 +43,7 @@
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+                        <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
                     </tr>
                     </thead>
                     <tbody class="bg-white">
@@ -70,6 +71,19 @@
                             </td>
                             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                                 <a href="{{route('user.show', ['id' => $user->id])}}" class="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline">Посмотреть</a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                                @if(in_array($user->id, $following))
+                                    <form action="{{ route('feed.unsubscribe', ['id' => $user->id]) }}" method="POST">
+                                        @csrf
+                                        <button class="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline" type="submit">Отписаться</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('feed.subscribe', ['id' => $user->id]) }}" method="POST">
+                                        @csrf
+                                        <button class="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline" type="submit">Подписаться</button>
+                                    </form>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                                 <a href="{{route('chat.store', ['to' => $user->id])}}" class="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline">Написать</a>
