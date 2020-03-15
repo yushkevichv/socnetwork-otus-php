@@ -37,5 +37,7 @@ class PostController extends Controller
 
     public function getWall()
     {
+        $posts = [];
+        return view('users.wall', compact('posts'  ));
     }
 }

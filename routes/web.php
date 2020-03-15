@@ -32,4 +32,5 @@ Route::middleware(['auth'])->group(function () {
 
    Route::get('/posts', 'PostController@index')->name('post.index');
    Route::post('/posts', 'PostController@store')->name('post.store');
+   Route::get('/wall', 'PostController@getWall')->name('post.wall');
 });
