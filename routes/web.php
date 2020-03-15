@@ -19,15 +19,14 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-//Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/users', 'UserController@index')->name('user.index');
     Route::get('/users/{id}', 'UserController@show')->name('user.show');
-//});
 
-
-Route::middleware(['auth'])->group(function () {
-//   Route::get('/chats', 'ChatController@index')->name('chat.index');
    Route::get('/chats', 'ChatController@store')->name('chat.store');
    Route::get('/chat/{id}', 'MessageController@index')->name('messages.user_index');
    Route::post('/chat/{id}', 'MessageController@store')->name('messages.store');
+
+   Route::post('subscribe/{id}', 'SubscribeController@subscribe')->name('feed.subscribe');
+   Route::post('unsubscribe/{id}', 'SubscribeController@unsubscribe')->name('feed.unsubscribe');
 });
