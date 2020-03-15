@@ -29,4 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
    Route::post('subscribe/{id}', 'SubscribeController@subscribe')->name('feed.subscribe');
    Route::post('unsubscribe/{id}', 'SubscribeController@unsubscribe')->name('feed.unsubscribe');
+
+   Route::get('/posts', 'PostController@index')->name('post.index');
+   Route::post('/posts', 'PostController@store')->name('post.store');
 });
