@@ -46,5 +46,10 @@ class UpdateFeed implements ShouldQueue
         ];
 
         Redis::lpush('user:feed:'.$this->userId, json_encode($data));
+        Redis::incr('user:non_readed:'.$this->userId);
+        $countNonRead = Redis::get('user:non_readed:'.$this->userId);
+
+        event(new \App\Events\NewPostInFeed($countNonRead, $this->userId));
+
     }
 }

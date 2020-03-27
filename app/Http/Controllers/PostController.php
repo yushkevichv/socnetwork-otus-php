@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\FeedRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 
 class PostController extends Controller
 {
@@ -37,7 +38,9 @@ class PostController extends Controller
 
     public function getWall()
     {
-        $posts = $this->feedRepository->getWall(Auth::id());
+        $userId = Auth::id();
+        $posts = $this->feedRepository->getWall($userId);
+        Redis::set('user:non_readed:'.$userId, 0);
         return view('users.wall', compact('posts' ));
     }
 }
